@@ -50,29 +50,6 @@ class StudentController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $student = Student::find($id);
-
-        if ($student == null) {
-            $data = [
-                'message' => 'resource not found'
-            ];
-
-            return response()->json($data, 404);
-        } else {
-            $data = [
-                'message' => 'get student by id',
-                'data' => $student
-            ];
-    
-            return response()->json($data, 200);
-        }
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
