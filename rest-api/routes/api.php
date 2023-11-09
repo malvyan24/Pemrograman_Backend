@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AnimalController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\AnimalsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,3 +31,10 @@ Route::put('/animals/{id}', [AnimalController::class, 'update']);
 
 #method delete
 Route::delete('/animals/{id}', [AnimalController::class, 'destroy']);
+
+#membuat route baru untuk student dengan method post
+Route::post('/students', [StudentController::class, 'store']);
+Route::get('/students', [StudentController::class, 'index']);
+Route::get('/students/{id}', [StudentController::class, 'show']);
+Route::put('/students/{id}', [StudentController::class, 'update']);
+Route::delete('/students/{id}', [StudentController::class, 'destroy']);
