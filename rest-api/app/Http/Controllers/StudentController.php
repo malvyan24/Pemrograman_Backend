@@ -10,25 +10,75 @@ class StudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    #menggunakan model student intuk mengambil data dari database
+    public function index(Request $request)
     {
-        $students = Student::all();
+        // Get all students
+        $students = Student::query();
 
-        $data = [
-            'message' => 'get all students',
-            'data' => $students
+        // Filter by name if provided
+        $name = $request->input('filter.nama');
+        if ($name) {
+            $students->where('nama', $name);
+        }
+
+        // Get sorting parameters
+        $order = $request->input('filter.order', 'asc');
+        $sort = $request->input('filter.sort', 'nama');
+
+        // Pagination parameters
+        $pageLimit = $request->input('page.limit', 1);
+        $pageNumber = $request->input('page.number', 1);
+        $offset = ($pageNumber - 1) * $pageLimit;
+
+        // Apply sorting and pagination
+        $students->orderBy($sort, $order)->offset($offset)->limit($pageLimit);
+
+        // Get total count for pagination
+        $studentTotal = Student::query();
+        if ($name) {
+            $studentTotal->where('nama', $name);
+        }
+        $totalData = $studentTotal->count();
+        $totalPage = ceil($totalData / $pageLimit);
+
+        // Prepare response data
+        $pages = [
+            'pageLimit' => (int)$pageLimit,
+            'pageNumber' => (int)$pageNumber,
+            'totalData' => $totalData,
+            'totalPage' => $totalPage,
         ];
 
-        #mengirim data (json) dan kode 200
-        return response()->json($data, 200);
+        $data = [
+            'pages' => $pages,
+            'table' => $students->get(),
+        ];
+        if ($data['table']->count() > 0) {
+            $result = [
+                'message' => 'Success Get All Users',
+                'data' => $data,
+            ];
+        } else {
+            $result = [
+                'message' => 'Data not found',
+            ];
+        }
+        return response()->json($result, 200);
     }
+    
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        #validasi data
+        $request->validate([
+            'nama' => 'required',
+            'nim' => 'required',
+            'jurusan' => 'required',
+            'email' => 'required'
+        ]);
         #mengambil data dari request
         $input = [
             'nama' => $request->nama,
